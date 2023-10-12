@@ -1,3 +1,5 @@
 # GymCounter
-MASSIVE WORK IN PROGRESS... I am actively working on this so it's not ready for pull requests, issues, etc. Just keeping it here as a backup while I work on it!
-BlackBerry OS 7 app to count sets and reps at the gym.
+This app tracks your workout at the gym! Keep track of reps, sets, and workout time.
+This is a simple BBOS 7.x app that avoids APIs that requiring signing the app.
+Compatible with BBOS 7.x devices only.
+<img src="Screenshot.png"/>
