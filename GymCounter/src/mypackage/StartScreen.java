@@ -24,7 +24,7 @@ public final class StartScreen extends MainScreen
     public StartScreen()
     {        
         //set screen title    
-        setTitle("Gym Counter");
+        setTitle("#1 Gym Counter");
 
         //create vertical field manager (basically a layout that displays items top-down)
         VerticalFieldManager mainField = new VerticalFieldManager();
