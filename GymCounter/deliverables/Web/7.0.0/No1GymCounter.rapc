@@ -1,0 +1,13 @@
+MIDlet-Name: No1GymCounter
+MIDlet-Version: 1.0.0
+MIDlet-Vendor: John Spahr
+MIDlet-Description: Track your workouts at the gym.
+MIDlet-Jar-URL: No1GymCounter.jar
+MIDlet-Jar-Size: 0
+MicroEdition-Profile: MIDP-2.0
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-1: GymCounter,main.png,
+RIM-MIDlet-Icon-1-1: focus.png,focused
+RIM-MIDlet-Icon-Count-1: 1
+RIM-MIDlet-Flags-1: 0
+

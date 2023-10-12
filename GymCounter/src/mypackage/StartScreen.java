@@ -48,8 +48,8 @@ public final class StartScreen extends MainScreen
 		} 
 
         //create label for caption. essentially tells user the purpose of this app
-        LabelField mainCaption; //TEST THIS
-        mainCaption.setText("Keep track of your progress at the gym!");
+        LabelField mainCaption = new LabelField(); //TEST THIS
+        mainCaption.setText("Keep track of your workout progress at the gym!");
 
         //create separator with top and bottom margin of 15px
         SeparatorField separator = new SeparatorField();
@@ -123,7 +123,7 @@ public final class StartScreen extends MainScreen
         public void run()
         {
             //on click, show about info dialog
-        	Dialog.alert("Gym Counter\nVersion 1.0.0\n\nCreated by John Spahr\n\njohnspahr.org\nlunarproject.org");
+        	Dialog.alert("#1 Gym Counter\nVersion 1.0.0\n\nCreated by John Spahr\n\njohnspahr.org\nlunarproject.org");
         }
     };  
     

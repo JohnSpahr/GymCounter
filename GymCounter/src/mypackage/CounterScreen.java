@@ -1,17 +1,21 @@
 package mypackage;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import net.rim.device.api.system.Application;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.FontFamily;
 import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.Ui;
+import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.component.ButtonField;
 import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.SeparatorField;
-import net.rim.device.api.ui.container.FullScreen;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
 import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.ui.container.VerticalFieldManager;
@@ -20,6 +24,10 @@ public class CounterScreen extends MainScreen {
 	//declare public variables...
 	public int setCount = 0;
 	public int repsInput = 0;
+	public int isRunning = 1; //stopwatch status
+	public int resetStopwatch = 0; //tell stopwatch to reset
+	public String secStr; //seconds count string
+	public String minStr; //minutes count string
 	public LabelField setsLbl = new LabelField();
 	public LabelField totalRepsLbl = new LabelField();
 	public LabelField stopwatchLbl = new LabelField();
@@ -28,7 +36,7 @@ public class CounterScreen extends MainScreen {
 	
 	public CounterScreen(int reps) {
 		//set screen title
-		setTitle("Active Counter");
+		setTitle("Workout Tracker");
 
 		//set public reps variable to reps integer transfered to this screen
 		repsInput = reps;
@@ -100,6 +108,7 @@ public class CounterScreen extends MainScreen {
             		setsLbl.setText("Sets: " + String.valueOf(setCount)); //update setsLbl to reflect current amount of sets
             		int totalReps = setCount * repsInput; //calculate total reps
             		totalRepsLbl.setText("Total Reps: " + String.valueOf(totalReps)); //update total reps label
+            		addSet.setFocus();
             	}
             }
         };
@@ -117,13 +126,17 @@ public class CounterScreen extends MainScreen {
 		buttonList.add(addSet);
 		buttonList.add(undoSet);
 		
-		//top separator; 15px margin top
+		//top separator; 15px margin top, 5px margin bottom
 		SeparatorField topSeparator = new SeparatorField();
-		topSeparator.setMargin(15, 0, 0, 0);
+		topSeparator.setMargin(15, 0, 5, 0);
 		
-		//bottom separator; 15px margin bottom
+		//bottom separator; 15px margin bottom, 5px margin top
 		SeparatorField bottomSeparator = new SeparatorField();
-		bottomSeparator.setMargin(0, 0, 15, 0);
+		bottomSeparator.setMargin(5, 0, 15, 0);
+		
+		//bottom separator; 15px margin top and bottom
+		SeparatorField stopwatchSeparator = new SeparatorField();
+		stopwatchSeparator.setMargin(15, 0, 15, 0);
 
 		//set stopwatch label text to default (0 minutes, 0 seconds)
 		stopwatchLbl.setText("00:00");
@@ -135,9 +148,90 @@ public class CounterScreen extends MainScreen {
 		counterContent.add(totalRepsLbl);
 		counterContent.add(bottomSeparator);
 		counterContent.add(buttonList);
+		counterContent.add(stopwatchSeparator);
+		counterContent.add(stopwatchLbl);
 
 		//add our vertical field manager to the screen
-		add(counterContent);		
+		add(counterContent);	
+		
+		//once everything has been added, start timer that runs in background thread
+		Timer stopwatch = new Timer();
+		stopwatch.schedule(new StopwatchTask(), 50, 50); //update every 50ms
+	}
+	
+	class StopwatchTask extends TimerTask {
+		//variables for tracking time...
+		long currentTime; //keeps track of the current time in ms, refreshes every 50ms
+		long startTime = System.currentTimeMillis(); //start time, keeps track of time when stopwatch starts
+		long timeElapsed = 0; //keeps track of time elapsed so far when stopwatch is paused
+		long diff = 0; //used to calculate different between the current time and the time when the stopwatch was started
+		long lastSec = 0; //tracks last second value reported to user so UI thread is not refreshed needlessly
+		
+		public void run() {
+			synchronized (Application.getEventLock()) {
+				//code to execute for timer...
+				if (isRunning == 1)
+				{
+					//if stopwatch is enabled...
+					currentTime = System.currentTimeMillis(); //set current time to the current time in ms
+					//find difference between the current time and the time that the timer started. add time elapsed to account for pauses
+					diff = (currentTime - startTime) + timeElapsed;
+					
+					//calculate minutes and seconds elapsed from difference
+					long min = diff / 60000;
+					long sec = (diff % 60000) / 1000;
+					
+					//convert minute and second values we just calculated to strings to be displayed
+					minStr = new Long(min).toString();
+					secStr = new Long(sec).toString();
+					
+					//if minutes and seconds values are below 10, add 0s in front of numbers to accurately represent them (example, 4:9 ---> 04:09)s
+					if (min < 10)
+					{
+						minStr = "0" + minStr;
+					}
+					if (sec < 10)
+					{
+						secStr = "0" + secStr;
+					}
+		
+					//if last recorded second is different than current second, update UI thread to show updated time...
+					if (lastSec != sec)
+					{
+						UiApplication.getUiApplication().invokeLater(new Runnable() {
+						    public void run() {
+						    	//use UI thread to set label text
+								stopwatchLbl.setText(minStr + ":" + secStr);
+						    }
+						});
+						
+						//update lastSec value
+						lastSec = sec;
+					}
+				}
+				else
+				{
+					//if stopwatch is paused...
+					if (timeElapsed != diff)
+					{
+						//if it hasn't already been updated, set timeElapsed to the latest calculated difference between currentTime and startTime 
+						timeElapsed = diff;
+					}
+					
+					//if stopwatch reset variable is set to 1, user has requested to reset it
+					if (resetStopwatch == 1)
+					{
+						timeElapsed = 0;
+						startTime = System.currentTimeMillis();
+						resetStopwatch = 0; //can't keep this on!
+						isRunning = 1;
+					}
+					
+					//update startTime to currentTime so stopwatch remains accurate when resumed
+					startTime = System.currentTimeMillis();
+				}
+		 	}
+		}
 	}
 
 	//intercept back button press...
@@ -160,7 +254,15 @@ public class CounterScreen extends MainScreen {
 	{
         public void run()
 		{
-        	//TODO: add le code & rename "mypackage"
+        	//toggle stopwatch. start/stop...
+        	if (isRunning == 1)
+        	{
+        		isRunning = 0;
+        	}
+        	else
+        	{
+        		isRunning = 1;
+        	}
         }
     };  
 
@@ -178,6 +280,8 @@ public class CounterScreen extends MainScreen {
 	        	setCount = 0;
 	    		setsLbl.setText("Sets: 0");
 	    		totalRepsLbl.setText("Total Reps: 0");
+	    		isRunning = 0;
+	    		resetStopwatch = 1; //reset!
             }
         }
     };  
