@@ -28,7 +28,7 @@ public class CounterScreen extends MainScreen {
 	
 	public CounterScreen(int reps) {
 		//set screen title
-		setTitle("#1 Gym Counter");
+		setTitle("Active Counter");
 
 		//set public reps variable to reps integer transfered to this screen
 		repsInput = reps;
