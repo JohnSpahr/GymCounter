@@ -1,0 +1,17 @@
+MIDlet-Name: GymCounter
+MIDlet-Version: 1.0.0
+MIDlet-Vendor: Lunar Project
+MIDlet-Jar-URL: GymCounter.jar
+MIDlet-Jar-Size: 15739
+MIDlet-Description: Track your progress at the gym.
+MicroEdition-Profile: MIDP-2.0
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-1: GymCounter,img/icon.png,
+RIM-MIDlet-Flags-1: 0
+Manifest-Version: 1.0
+RIM-COD-URL: GymCounter.cod
+RIM-COD-Size: 6908
+RIM-COD-Creation-Time: 1697079499
+RIM-COD-Module-Name: GymCounter
+RIM-COD-Module-Dependencies: net_rim_cldc
+RIM-COD-SHA1: 26 41 91 24 43 8b 9f 03 02 2c 8e 73 b5 72 cf fa 87 90 60 33
