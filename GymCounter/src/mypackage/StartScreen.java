@@ -122,9 +122,9 @@ public final class StartScreen extends MainScreen
     {
         public void run()
         {
-	    //close app
-            this.close();
-	}
+        	//close app
+            System.exit(0);
+        }
     };  
 
     //create menu item titled "About"
@@ -133,14 +133,14 @@ public final class StartScreen extends MainScreen
         public void run()
         {
             //on click, show about info dialog
-            Dialog.alert("#1 Gym Counter\nVersion 1.0.0\n\nCreated by John Spahr\n\njohnspahr.org\nlunarproject.org");
+            Dialog.alert("#1 Gym Counter\nVersion 1.0.1\n\nCreated by John Spahr\n\njohnspahr.org\nlunarproject.org");
         }
     };  
     
     protected void makeMenu(Menu menu, int instance)
     {
         //add custom menu items and separator to distinguish from system menu items
-	menu.add(closeApp);
+    	menu.add(closeApp);
         menu.add(aboutApp);
         menu.addSeparator();
     }
