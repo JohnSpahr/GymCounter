@@ -4,3 +4,5 @@ This is a simple BBOS 7.x app that avoids APIs that requiring signing the app.
 Compatible with BBOS 7.x devices only.
 
 <img src="Screenshot.png" width="128px"/>
+
+Created entirely by me, John Spahr ;)
